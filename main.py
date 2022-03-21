@@ -6,7 +6,8 @@ GRID = grid.grid([
     [" ", "X", "X", " ", " ", " ", " ", " "],
     [" ", " ", " ", "X", " ", " ", "X", " "],
     ["X", "X", " ", " ", " ", "X", "X", " "]
-])
+], False)
 
-while True:
-    GRID.genPath()
+GRID.genPath()
+
+print(GRID.path)

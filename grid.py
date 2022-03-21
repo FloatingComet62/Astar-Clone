@@ -2,11 +2,16 @@ import os
 import time
 
 class grid:
-    def __init__(self, grid):
+    def __init__(self, grid, Ui, timeDelay=0.1):
         self.grid = grid
+        self.ui = Ui
+        self.backUpGrid = grid
         self.row = len(self.grid)
         self.col = len(self.grid[0])
         self.numGrid = [[0 for x in range(self.col)] for y in range(self.row)]
+        self.path = []
+        self.finding = True
+        self.timeDelay = timeDelay
 
         for x in range(self.row):
             row = self.grid[x]
@@ -40,19 +45,18 @@ class grid:
                 if row[j] == "D":
                     return (i, j)
     
-    def end(self):
-        self.callback()
-        print("Done!")
-        exit(0)
-    
     def setCell(self, coords, identifier):
         (x, y) = coords
         self.grid[x][y] = identifier   
     
-    def callback(self):
-        os.system('cls')
-        self.printGrid()
-        time.sleep(0.1)
+    def callback(self, end=False):
+        if self.ui:
+            os.system('cls')
+            self.printGrid()
+            time.sleep(self.timeDelay)
+        
+        if end:
+            self.finding = False
         pass
     
     def poop(self, coords):
@@ -78,7 +82,7 @@ class grid:
             self.setCell((y-1, x), "P")
             self.poop((y, x))
             self.setCell((y, x), " ")
-            self.end()
+            self.callback(True)
         
         self.setCell((y-1, x), "P")
         self.poop((y, x))
@@ -100,7 +104,7 @@ class grid:
             self.setCell((y+1, x), "P")
             self.poop((y, x))
             self.setCell((y, x), " ")
-            self.end()
+            self.callback(True)
         
         self.setCell((y+1, x), "P")
         self.poop((y, x))
@@ -122,7 +126,7 @@ class grid:
             self.setCell((y, x+1), "P")
             self.poop((y, x))
             self.setCell((y, x), " ")
-            self.end()
+            self.callback(True)
         
         self.setCell((y, x+1), "P")
         self.poop((y, x))
@@ -144,7 +148,7 @@ class grid:
             self.setCell((y, x-1), "P")
             self.poop((y, x))
             self.setCell((y, x), " ")
-            self.end()
+            self.callback(True)
         
         self.setCell((y, x-1), "P")
         self.poop((y, x))
@@ -167,34 +171,44 @@ class grid:
         return output
 
     def genPath(self):
-        (y, x) = self.getPlayer()
-        up = 9999999
-        down = 9999999
-        right = 999999
-        left = 9999999
-        if not y == 0:
-            up = self.numGrid[y-1][x]
-        if not y == self.row-1:
-            down = self.numGrid[y+1][x]
-        if not x == self.col-1:
-            right = self.numGrid[y][x+1]
-        if not x == 0:
-            left = self.numGrid[y][x-1]
+        while self.finding:
+            (y, x) = self.getPlayer()
+            up = 9999999
+            down = 9999999
+            right = 999999
+            left = 9999999
+            if not y == 0:
+                up = self.numGrid[y-1][x]
+            if not y == self.row-1:
+                down = self.numGrid[y+1][x]
+            if not x == self.col-1:
+                right = self.numGrid[y][x+1]
+            if not x == 0:
+                left = self.numGrid[y][x-1]
 
-        up = self.changetoInt(up)
-        down = self.changetoInt(down)
-        right = self.changetoInt(right)
-        left = self.changetoInt(left)
+            up = self.changetoInt(up)
+            down = self.changetoInt(down)
+            right = self.changetoInt(right)
+            left = self.changetoInt(left)
 
-        sortedList = [up, down, right, left]
-        sortedList.sort()
-        if sortedList[0] == up:
-            self.up()
-        elif sortedList[0] == down:
-            self.down()
-        elif sortedList[0] == right:
-            self.right()
-        elif sortedList[0] == left:
-            self.left()
-
-        # print(f"\"{up}\", \"{down}\", \"{right}\", \"{left}\"")
+            sortedList = [up, down, right, left]
+            sortedList.sort()
+            if sortedList[0] == up:
+                self.up()
+                self.path.append("up")
+            elif sortedList[0] == down:
+                self.down()
+                self.path.append("down")
+            elif sortedList[0] == right:
+                self.right()
+                self.path.append("right")
+            elif sortedList[0] == left:
+                self.left()
+                self.path.append("left")
+    
+    def reset(self):
+        self.grid = self.backUpGrid
+        self.row = len(self.grid)
+        self.col = len(self.grid[0])
+        self.numGrid = [[0 for x in range(self.col)] for y in range(self.row)]
+        self.path = []
