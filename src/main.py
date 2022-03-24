@@ -7,7 +7,6 @@ GRID = grid.grid([
     [" ", " ", " ", "X", " ", " ", "X", " "],
     ["X", "X", " ", " ", " ", "X", "X", " "]
 ], False)
-
-GRID.genPath()
-
-print(GRID.path)
+directions = GRID.genPath()
+GRID.reset(True, 0.1)
+GRID.followDirections(directions)

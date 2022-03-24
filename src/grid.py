@@ -5,7 +5,7 @@ class grid:
     def __init__(self, grid, Ui, timeDelay=0.1):
         self.grid = grid
         self.ui = Ui
-        self.backUpGrid = grid
+        self.backUpGrid = [x[:] for x in grid]
         self.row = len(self.grid)
         self.col = len(self.grid[0])
         self.numGrid = [[0 for x in range(self.col)] for y in range(self.row)]
@@ -47,7 +47,7 @@ class grid:
     
     def setCell(self, coords, identifier):
         (x, y) = coords
-        self.grid[x][y] = identifier   
+        self.grid[x][y] = identifier
     
     def callback(self, end=False):
         if self.ui:
@@ -64,10 +64,6 @@ class grid:
         self.numGrid[x][y] += 1
 
         return self.numGrid[x][y]
-
-
-
-
 
     def up(self):
         (y, x) = self.getPlayer()
@@ -94,7 +90,7 @@ class grid:
     def down(self):
         (y, x) = self.getPlayer()
 
-        if y == self.row:
+        if y == self.row-1:
             self.callback()
             return self
         if self.grid[y+1][x] == "X":
@@ -116,7 +112,7 @@ class grid:
     def right(self):
         (y, x) = self.getPlayer()
 
-        if x == self.col:
+        if x == self.col-1:
             self.callback()
             return self
         if self.grid[y][x+1] == "X":
@@ -156,11 +152,7 @@ class grid:
         self.callback()
 
         return self
-
-
-
-
-
+    
     def changetoInt(self, num):
         output = 0
         try:
@@ -205,10 +197,32 @@ class grid:
             elif sortedList[0] == left:
                 self.left()
                 self.path.append("left")
+        return self.path
     
-    def reset(self):
+    def reset(self, Ui, timeDelay):
         self.grid = self.backUpGrid
         self.row = len(self.grid)
         self.col = len(self.grid[0])
-        self.numGrid = [[0 for x in range(self.col)] for y in range(self.row)]
         self.path = []
+        self.ui = Ui
+        self.timeDelay = timeDelay
+        self.finding = True
+
+        for x in range(self.row):
+            row = self.grid[x]
+            for y in range(self.col):
+                if row[y] == "X":
+                    self.numGrid[x][y] = 9999999
+                if row[y] == "D":
+                    self.numGrid[x][y] = -1
+    
+    def followDirections(self, paths):
+        for direction in paths:
+            if direction == "up":
+                self.up()
+            if direction == "down":
+                self.down()
+            if direction == "right":
+                self.right()
+            if direction == "left":
+                self.left()
