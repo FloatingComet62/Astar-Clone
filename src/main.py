@@ -1,6 +1,6 @@
 import grid
 
-GRID = grid.grid([
+GRID = grid.Grid([
     [" ", " ", " ", " ", "X", "D", " ", "X"],
     ["P", "X", "X", " ", "X", "X", " ", "X"],
     [" ", "X", "X", " ", " ", " ", " ", " "],
